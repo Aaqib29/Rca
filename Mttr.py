@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 from datetime import datetime
 
 # Load the CSV file into a DataFrame
@@ -56,18 +55,24 @@ df['Stratification'] = df['allNotes'].apply(extract_stratification)
 df['Mitigation'] = df['allNotes'].apply(extract_mitigation)
 df['Time after ACK'] = df['allNotes'].apply(extract_time_after_ack)
 
-# Convert the "formattedStartTime", "Time after ACK", and "formattedClosedDate" columns to datetime objects
-df['formattedStartTime'] = pd.to_datetime(df['formattedStartTime'], format='%b %d, %Y, %I:%M:%S %p')
-df['Time after ACK'] = pd.to_datetime(df['Time after ACK'], format='%b %d, %Y, %I:%M:%S %p')
-df['formattedClosedDate'] = pd.to_datetime(df['formattedClosedDate'], format='%b %d, %Y, %I:%M:%S %p')
+# Clean the "Time after ACK" column to keep only the time in the specified format
+df['Time after ACK'] = df['Time after ACK'].str.extract(r'(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},\s\d{1,2}:\d{2}:\d{2}\s(?:AM|PM))')
 
-# Calculate the time difference and create the "MTTA" and "MTTR" columns
+# Convert the "formattedStartTime" and "Time after ACK" columns to datetime objects
+df['formattedStartTime'] = pd.to_datetime(df['formattedStartTime'], format='%b %d, %Y, %I:%M:%S %p')
+df['formattedClosedDate'] = pd.to_datetime(df['formattedClosedDate'], format='%b %d, %Y, %I:%M:%S %p', errors='coerce')
+
+# Calculate the time difference and create the "MTTA" column
 df['MTTA'] = df['Time after ACK'] - df['formattedStartTime']
+
+# Convert the time difference to a formatted string
+df['MTTA'] = df['MTTA'].apply(lambda x: str(x) if pd.notnull(x) else None)
+
+# Calculate the MTTR
 df['MTTR'] = df['formattedClosedDate'] - df['formattedStartTime']
 
-# Convert the time differences to formatted strings
-df['MTTA'] = df['MTTA'].apply(lambda x: str(x) if pd.notnull(x) else None)
-df['MTTR'] = df['MTTR'].apply(lambda x: str(x) if pd.notnull(x) else None)
+# Handle cases where either column contains None (missing date)
+df['MTTR'] = df['MTTR'].apply(lambda x: str(x) if pd.notnull(x) else 'None')
 
 # Save the updated DataFrame back to a new CSV file
 df.to_csv('output_data.csv', index=False)
