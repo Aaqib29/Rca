@@ -56,18 +56,15 @@ df['Stratification'] = df['allNotes'].apply(extract_stratification)
 df['Mitigation'] = df['allNotes'].apply(extract_mitigation)
 df['Time after ACK'] = df['allNotes'].apply(extract_time_after_ack)
 
-# Clean the "Time after ACK" column to keep only the time in the specified format
-df['Time after ACK'] = df['Time after ACK'].str.extract(r'(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},\s\d{1,2}:\d{2}:\d{2}\s(?:AM|PM))')
-
 # Convert the "formattedStartTime" and "formattedClosedDate" columns to datetime objects
 df['formattedStartTime'] = pd.to_datetime(df['formattedStartTime'], format='%b %d, %Y, %I:%M:%S %p')
 df['formattedClosedDate'] = pd.to_datetime(df['formattedClosedDate'], format='%b %d, %Y, %I:%M:%S %p')
 
-# Calculate the time difference and create the "MTTA" column
+# Calculate the time difference and create the "MTTA" and "MTTR" columns
 df['MTTA'] = df['Time after ACK'] - df['formattedStartTime']
 df['MTTR'] = df['formattedClosedDate'] - df['formattedStartTime']
 
-# Convert the time difference to formatted strings
+# Convert the time differences to formatted strings
 df['MTTA'] = df['MTTA'].apply(lambda x: str(x) if pd.notnull(x) else None)
 df['MTTR'] = df['MTTR'].apply(lambda x: str(x) if pd.notnull(x) else None)
 
@@ -76,4 +73,3 @@ df.to_csv('output_data.csv', index=False)
 
 # Print the resulting DataFrame
 print(df)
-
