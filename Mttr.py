@@ -56,8 +56,9 @@ df['Stratification'] = df['allNotes'].apply(extract_stratification)
 df['Mitigation'] = df['allNotes'].apply(extract_mitigation)
 df['Time after ACK'] = df['allNotes'].apply(extract_time_after_ack)
 
-# Convert the "formattedStartTime" and "formattedClosedDate" columns to datetime objects
+# Convert the "formattedStartTime", "Time after ACK", and "formattedClosedDate" columns to datetime objects
 df['formattedStartTime'] = pd.to_datetime(df['formattedStartTime'], format='%b %d, %Y, %I:%M:%S %p')
+df['Time after ACK'] = pd.to_datetime(df['Time after ACK'], format='%b %d, %Y, %I:%M:%S %p')
 df['formattedClosedDate'] = pd.to_datetime(df['formattedClosedDate'], format='%b %d, %Y, %I:%M:%S %p')
 
 # Calculate the time difference and create the "MTTA" and "MTTR" columns
