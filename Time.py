@@ -34,7 +34,7 @@ def extract_mitigation(row):
 
 # Function to extract time mentioned after "ack" or "Ack"
 def extract_time_after_ack(row):
-    time_match = re.search(r'ack(.*?)\b(?:AM|PM)', row, re.IGNORECASE)
+    time_match = re.search(r'(?i)ack(.*?)\b(?:AM|PM)', row)
     if time_match:
         time = time_match.group(1).strip()
         return time
