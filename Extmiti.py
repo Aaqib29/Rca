@@ -24,13 +24,13 @@ def extract_stratification(row):
 
 # Function to extract mitigation information
 def extract_mitigation(row):
-    # Use a more specific pattern to stop at the first full stop (excluding IPs)
-    mitigation_match = re.search(r'Mitigations?:(.*?)(?:(?:\s(?:[0-9]{1,3}\.){3}[0-9]{1,3})|\. | \| Ack|$)', row, re.IGNORECASE | re.DOTALL)
+    # Use a more specific pattern to stop at the specified keywords or none
+    mitigation_match = re.search(r'Mitigations?:(.*?)(?:Seniorsocuser|Soc user|Admin|\| Ack|$)', row, re.IGNORECASE | re.DOTALL)
     if mitigation_match:
         mitigation = mitigation_match.group(1).strip()
         return mitigation
     else:
-        return None
+        return "None"
 
 # Apply the function to the DataFrame to create new columns
 df['rca_data'] = df['allNotes'].apply(extract_rca_data)
