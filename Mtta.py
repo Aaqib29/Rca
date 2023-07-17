@@ -42,10 +42,15 @@ def extract_mitigation(row):
 
 # Function to extract time mentioned after "ack" or "Ack"
 def extract_time_after_ack(row):
-    time_match = re.search(r'\b(?i)ack(.*?)(?=\s(?:AM|PM))\s(?:AM|PM)', row)
+    time_match = re.search(r'(?i)ack(.*?)(?:AM|PM)', row)
     if time_match:
-        time = time_match.group(0).strip()  # Get the entire match including AM or PM
-        return time
+        time = time_match.group(1).strip()  # Get the text after "ack" until AM or PM
+        # Extract the date and time from the extracted text
+        date_time_match = re.search(r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},\s\d{1,2}:\d{1,2}:\d{1,2}\s(?:AM|PM)\b', time)
+        if date_time_match:
+            return date_time_match.group(0)
+        else:
+            return None
     else:
         return None
 
