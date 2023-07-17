@@ -152,7 +152,7 @@ df['Time after ACK'] = df['Time after ACK'].str.extract(r'(\b(?:Jan|Feb|Mar|Apr|
 df['formattedStartTime'] = pd.to_datetime(df['formattedStartTime'], format='%b %d, %Y, %I:%M:%S %p')
 df['formattedClosedDate'] = pd.to_datetime(df['formattedClosedDate'], format='%b %d, %Y, %I:%M:%S %p', errors='coerce')
 
-# Calculate the MTTA
+# Calculate the MTTA and MTTR
 def calculate_mtta(row):
     start_time = row['formattedStartTime']
     ack_time = row['Time after ACK']
@@ -161,12 +161,6 @@ def calculate_mtta(row):
     else:
         return None
 
-df['MTTA'] = df.apply(calculate_mtta, axis=1)
-
-# Convert the MTTA to a formatted string
-df['MTTA'] = df['MTTA'].apply(lambda x: str(x) if pd.notnull(x) else 'None')
-
-# Calculate the MTTR
 def calculate_mttr(row):
     start_time = row['formattedStartTime']
     closed_date = row['formattedClosedDate']
@@ -175,9 +169,11 @@ def calculate_mttr(row):
     else:
         return None
 
+df['MTTA'] = df.apply(calculate_mtta, axis=1)
 df['MTTR'] = df.apply(calculate_mttr, axis=1)
 
-# Convert the MTTR to a formatted string
+# Convert the MTTA and MTTR to formatted strings
+df['MTTA'] = df['MTTA'].apply(lambda x: str(x) if pd.notnull(x) else 'None')
 df['MTTR'] = df['MTTR'].apply(lambda x: str(x) if pd.notnull(x) else 'None')
 
 # Save the updated DataFrame back to a new CSV file
