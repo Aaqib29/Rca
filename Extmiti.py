@@ -24,7 +24,8 @@ def extract_stratification(row):
 
 # Function to extract mitigation information
 def extract_mitigation(row):
-    mitigation_match = re.search(r'Mitigations?:(.*?)(?:\| Ack|$)', row, re.IGNORECASE | re.DOTALL)
+    # Use a more specific pattern for mitigation to avoid matching IP addresses with dots
+    mitigation_match = re.search(r'Mitigations?:(.*?)(?:\s(?:[0-9]{1,3}\.){3}[0-9]{1,3}|\| Ack|$)', row, re.IGNORECASE | re.DOTALL)
     if mitigation_match:
         mitigation = mitigation_match.group(1).strip()
         return mitigation
