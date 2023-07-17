@@ -66,9 +66,11 @@ df['Time after ACK'] = pd.to_datetime(df['Time after ACK'], format='%b %d, %Y, %
 # Calculate the time difference and create the "MTTA" column
 df['MTTA'] = df['Time after ACK'] - df['formattedStartTime']
 
+# Convert the time difference to a formatted string
+df['MTTA'] = df['MTTA'].astype(str).str.extract(r'(\d+ days) (\d+:\d+:\d+)')
+
 # Save the updated DataFrame back to a new CSV file
 df.to_csv('output_data.csv', index=False)
 
 # Print the resulting DataFrame
 print(df)
-
