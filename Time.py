@@ -36,7 +36,7 @@ def extract_mitigation(row):
 def extract_time_after_ack(row):
     time_match = re.search(r'(?i)ack(.*?)(?=\s(?:AM|PM))', row)
     if time_match:
-        time = time_match.group(1).strip()
+        time = time_match.group(0).strip()  # Get the entire match including AM or PM
         return time
     else:
         return None
