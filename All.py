@@ -9,8 +9,8 @@ def extract_data_from_pdf(pdf_file):
     # Regular expression pattern for common hash types (e.g., MD5, SHA-256)
     hash_pattern = r'\b(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64})\b'
 
-    # Regular expression pattern for URLs/domains (both with and without www, with http/https)
-    url_pattern = r'https?://(?:www\.)?[\w.-]+(?:\.[a-zA-Z]{2,})+'
+    # Regular expression pattern for URLs/domains
+    domain_pattern = r'https?://(?:www\.)?[\w.-]+\.[a-zA-Z]{2,}'
 
     # Regular expression pattern for IP addresses (IPv4 and IPv6)
     ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\.\d{1,3})?|\[?[0-9a-fA-F:]+\]?)\b'
@@ -29,11 +29,18 @@ def extract_data_from_pdf(pdf_file):
         hashes.extend(found_hashes)
 
         # Find URLs/domains using regex
-        found_urls_domains = re.findall(url_pattern, page_text)
-        urls_domains.extend(found_urls_domains)
+        found_urls_domains = re.findall(domain_pattern, page_text)
+        urls_domains.extend([''.join(url) for url in found_urls_domains])
 
         # Find IPs using regex (using a more comprehensive pattern)
         found_ips = re.findall(ip_pattern, page_text)
+        ips.extend(found_ips)
+
+        # Find domains and IPs preceded by specific keywords
+        found_domains = re.findall(r'Domain:(.*?)$', page_text, re.MULTILINE | re.IGNORECASE)
+        urls_domains.extend(found_domains)
+
+        found_ips = re.findall(r'IP:(.*?)$', page_text, re.MULTILINE | re.IGNORECASE)
         ips.extend(found_ips)
 
     # Close the PDF document
