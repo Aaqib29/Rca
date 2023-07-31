@@ -2,7 +2,7 @@ import re
 import pandas as pd
 import fitz  # PyMuPDF
 
-def extract_hashes_from_pdf(pdf_file):
+def extract_data_from_pdf(pdf_file):
     # Open the PDF file
     pdf_document = fitz.open(pdf_file)
 
@@ -10,10 +10,10 @@ def extract_hashes_from_pdf(pdf_file):
     hash_pattern = r'\b(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64})\b'
 
     # Regular expression pattern for URLs/domains
-    url_pattern = r'https?://(?:www\.)?[\w.-]+(?:\.[a-zA-Z]{2,})+'
+    url_pattern = r'https?://(?:www\.)?[^\s]+'
 
     # Regular expression pattern for IP addresses (IPv4 and IPv6)
-    ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\[?[0-9a-fA-F:]+\]?)\b'
+    ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\[?[0-9a-fA-F:.]+\]?)\b'
 
     hashes = []
     urls_domains = []
@@ -49,7 +49,7 @@ def save_data_to_csv(data, column_name, output_file):
 if __name__ == "__main__":
     # Replace 'input_file.pdf' with the path to your PDF file
     pdf_file_path = 'input_file.pdf'
-    extracted_hashes, extracted_urls_domains, extracted_ips = extract_hashes_from_pdf(pdf_file_path)
+    extracted_hashes, extracted_urls_domains, extracted_ips = extract_data_from_pdf(pdf_file_path)
 
     # Replace 'hashes_output.csv' with the desired output CSV file path for hashes
     save_data_to_csv(extracted_hashes, 'hashes', 'hashes_output.csv')
