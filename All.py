@@ -10,10 +10,10 @@ def extract_data_from_pdf(pdf_file):
     hash_pattern = r'\b(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64})\b'
 
     # Regular expression pattern for URLs/domains (both with and without www, with http/https)
-    url_pattern = r'https?://(?:www\.)?[\w.-]+(?:\.[a-zA-Z]{2,})+|www\.[\w.-]+(?:\.[a-zA-Z]{2,})+'
+    url_pattern = r'https?://(?:www\.)?[\w.-]+(?:\.[a-zA-Z]{2,})+'
 
     # Regular expression pattern for IP addresses (IPv4 and IPv6)
-    ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\[?[0-9a-fA-F:]+\]?)\b'
+    ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\.\d{1,3})?|\[?[0-9a-fA-F:]+\]?)\b'
 
     hashes = []
     urls_domains = []
