@@ -9,7 +9,7 @@ def extract_data_from_pdf(pdf_file):
     # Regular expression pattern for common hash types (e.g., MD5, SHA-256)
     hash_pattern = r'\b(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64})\b'
 
-    # Regular expression pattern for URLs/domains (both with and without https)
+    # Regular expression pattern for URLs/domains (both with and without www, with http/https)
     url_pattern = r'https?://(?:www\.)?[\w.-]+(?:\.[a-zA-Z]{2,})+|www\.[\w.-]+(?:\.[a-zA-Z]{2,})+'
 
     # Regular expression pattern for IP addresses (IPv4 and IPv6)
