@@ -10,10 +10,10 @@ def extract_data_from_pdf(pdf_file):
     hash_pattern = r'\b(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64})\b'
 
     # Regular expression pattern for URLs/domains
-    domain_pattern = r'https?://(?:www\.)?[\w.-]+\.[a-zA-Z]{2,}'
+    domain_pattern = r'(?P<url>https?://(?:www\.)?[\w.-]+\.[a-zA-Z]{2,})'
 
-    # Regular expression pattern for IP addresses (IPv4 and IPv6)
-    ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\.\d{1,3})?|\[?[0-9a-fA-F:]+\]?)\b'
+    # Regular expression pattern for valid IP addresses (IPv4 and IPv6) with dots
+    ip_pattern = r'\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\.\d{1,3})?|\[?[0-9a-fA-F:.]+\]?)\b'
 
     hashes = []
     urls_domains = []
@@ -30,18 +30,27 @@ def extract_data_from_pdf(pdf_file):
 
         # Find URLs/domains using regex
         found_urls_domains = re.findall(domain_pattern, page_text)
-        urls_domains.extend(found_urls_domains)
+        urls_domains.extend([match[0] for match in found_urls_domains])
 
         # Find IPs using regex (using a more comprehensive pattern)
         found_ips = re.findall(ip_pattern, page_text)
         ips.extend(found_ips)
 
         # Find domains and IPs preceded by specific keywords
-        found_domains = re.findall(r'(?<=Domain: )[\w\.-]+', page_text, re.MULTILINE | re.IGNORECASE)
-        urls_domains.extend(found_domains)
+        domain_heading_matches = re.finditer(r'Domain:', page_text, re.IGNORECASE)
+        for match in domain_heading_matches:
+            domain_start = match.end()
+            domain_end = page_text.find('\n', domain_start)
+            domain = page_text[domain_start:domain_end].strip()
+            urls_domains.append(domain)
 
-        found_ips = re.findall(r'(?<=IP: )\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\.\d{1,3})?|\[?[0-9a-fA-F:]+\]?)\b', page_text, re.MULTILINE | re.IGNORECASE)
-        ips.extend(found_ips)
+        ip_heading_matches = re.finditer(r'IP:', page_text, re.IGNORECASE)
+        for match in ip_heading_matches:
+            ip_start = match.end()
+            ip_end = page_text.find('\n', ip_start)
+            ip = page_text[ip_start:ip_end].strip()
+            if re.fullmatch(ip_pattern, ip):
+                ips.append(ip)
 
     # Close the PDF document
     pdf_document.close()
