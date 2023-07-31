@@ -30,17 +30,17 @@ def extract_data_from_pdf(pdf_file):
 
         # Find URLs/domains using regex
         found_urls_domains = re.findall(domain_pattern, page_text)
-        urls_domains.extend([''.join(url) for url in found_urls_domains])
+        urls_domains.extend(found_urls_domains)
 
         # Find IPs using regex (using a more comprehensive pattern)
         found_ips = re.findall(ip_pattern, page_text)
         ips.extend(found_ips)
 
         # Find domains and IPs preceded by specific keywords
-        found_domains = re.findall(r'Domain:(.*?)$', page_text, re.MULTILINE | re.IGNORECASE)
+        found_domains = re.findall(r'(?<=Domain: )[\w\.-]+', page_text, re.MULTILINE | re.IGNORECASE)
         urls_domains.extend(found_domains)
 
-        found_ips = re.findall(r'IP:(.*?)$', page_text, re.MULTILINE | re.IGNORECASE)
+        found_ips = re.findall(r'(?<=IP: )\b(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\.\d{1,3})?|\[?[0-9a-fA-F:]+\]?)\b', page_text, re.MULTILINE | re.IGNORECASE)
         ips.extend(found_ips)
 
     # Close the PDF document
