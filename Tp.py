@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import os
+import json
 
 # Define your VirusTotal API key here
 api_key = 'YOUR_VIRUSTOTAL_API_KEY'
@@ -10,11 +11,17 @@ def get_vt_score_and_link(url):
     endpoint = 'https://www.virustotal.com/api/v3/urls/' + url
     headers = {'x-apikey': api_key}
     response = requests.get(endpoint, headers=headers)
-    json_response = response.json()
     
-    if 'data' in json_response:
-        data = json_response['data']
-        return data['attributes']['last_analysis_stats']['malicious'], data['attributes']['last_analysis_stats']['harmless'], data['links']['self']
+    if response.status_code == 200:
+        try:
+            json_response = response.json()
+            if 'data' in json_response:
+                data = json_response['data']
+                return data['attributes']['last_analysis_stats']['malicious'], data['attributes']['last_analysis_stats']['harmless'], data['links']['self']
+            else:
+                return None, None, None
+        except json.JSONDecodeError:
+            return None, None, None
     else:
         return None, None, None
 
