@@ -21,6 +21,9 @@ def get_vt_score_and_link(url):
 file_path = 'your_xlsx_file.xlsx'
 xls = pd.ExcelFile(file_path)
 
+# Create a new Excel file for the updated data
+output_file_path = 'updated_' + file_path
+
 # Iterate through each sheet
 for sheet_name in xls.sheet_names:
     df = xls.parse(sheet_name)
@@ -39,6 +42,8 @@ for sheet_name in xls.sheet_names:
                 df.at[index, 'VT Score'] = f'Malicious: {vt_malicious}, Harmless: {vt_harmless}'
                 df.at[index, 'VT Link'] = vt_permalink
     
-    # Save the updated DataFrame back to the Excel file
-    with pd.ExcelWriter(file_path, mode='a', engine='openpyxl') as writer:
+    # Save the updated DataFrame to the new Excel file
+    with pd.ExcelWriter(output_file_path, mode='a', engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+print(f"Updated data saved to {output_file_path}")
