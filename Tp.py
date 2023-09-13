@@ -26,8 +26,7 @@ file_path = os.path.join('/content', file_name)
 xls = pd.ExcelFile(file_path)
 
 # Create a new Excel file for the updated data within Google Colab
-output_file_name = 'updated_' + file_name
-output_file_path = os.path.join('/content', output_file_name)
+output_file_path = os.path.join('/content', file_name)  # Use the same file name
 
 # Iterate through each sheet
 for sheet_name in xls.sheet_names:
@@ -47,7 +46,7 @@ for sheet_name in xls.sheet_names:
                 df.at[index, 'VT Score'] = f'Malicious: {vt_malicious}, Harmless: {vt_harmless}'
                 df.at[index, 'VT Link'] = vt_permalink
     
-    # Save the updated DataFrame to the new Excel file within Google Colab
+    # Save the updated DataFrame to the same Excel file without the "updated_" prefix
     with pd.ExcelWriter(output_file_path, mode='a', engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet_name, index=False)
 
