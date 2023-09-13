@@ -1,63 +1,38 @@
 import pandas as pd
 import requests
-import os
-import json
 
 # Define your VirusTotal API key here
 api_key = 'YOUR_VIRUSTOTAL_API_KEY'
 
-# Function to get VirusTotal score and link for URLs
-def get_vt_score_and_link(url):
-    endpoint = 'https://www.virustotal.com/api/v3/urls/' + url
+# Function to get VirusTotal score and link
+def get_vt_score_and_link(indicator):
+    endpoint = 'https://www.virustotal.com/api/v3/urls/' + indicator
     headers = {'x-apikey': api_key}
     response = requests.get(endpoint, headers=headers)
-    
-    if response.status_code == 200:
-        try:
-            json_response = response.json()
-            if 'data' in json_response:
-                data = json_response['data']
-                return data['attributes']['last_analysis_stats']['malicious'], data['attributes']['last_analysis_stats']['harmless'], data['links']['self']
-            else:
-                return None, None, None
-        except json.JSONDecodeError:
-            return None, None, None
+    json_response = response.json()
+
+    if response.status_code == 200 and 'data' in json_response:
+        data = json_response['data']
+        return data['attributes']['last_analysis_stats']['malicious'], data['attributes']['last_analysis_stats']['harmless'], data['links']['self']
     else:
         return None, None, None
 
-# Define the path to your XLSX file within Google Colab
-file_name = 'your_xlsx_file.xlsx'  # Replace with your XLSX file name
-file_path = os.path.join('/content', file_name)
+# Load your CSV file into a DataFrame
+df = pd.read_csv('your_input.csv')  # Replace 'your_input.csv' with your CSV file path
 
-# Load your XLSX file with multiple sheets
-xls = pd.ExcelFile(file_path)
+# Create 'VT Score' and 'VT Link' columns initially with empty values
+df['VT Score'] = ""
+df['VT Link'] = ""
 
-# Create a new Excel file for the updated data within Google Colab
-output_file_path = os.path.join('/content', 'updated_' + file_name)
-
-# Iterate through each sheet
-for sheet_name in xls.sheet_names:
-    df = xls.parse(sheet_name)
+# Iterate through rows in the DataFrame
+for index, row in df.iterrows():
+    indicator = row['Indicator Value']
     
-    # Create 'VT Score' and 'VT Link' columns initially with empty values
-    df['VT Score'] = ""
-    df['VT Link'] = ""
+    if indicator:
+        vt_malicious, vt_harmless, vt_permalink = get_vt_score_and_link(indicator)
+        if vt_malicious is not None:
+            df.at[index, 'VT Score'] = f'Malicious: {vt_malicious}, Harmless: {vt_harmless}'
+            df.at[index, 'VT Link'] = vt_permalink
 
-    # Iterate through rows in the DataFrame
-    for index, row in df.iterrows():
-        indicator = row['indicator value']
-        
-        if indicator:
-            vt_malicious, vt_harmless, vt_permalink = get_vt_score_and_link(indicator)
-            if vt_malicious is not None:
-                df.at[index, 'VT Score'] = f'Malicious: {vt_malicious}, Harmless: {vt_harmless}'
-                df.at[index, 'VT Link'] = vt_permalink
-    
-    # Save the updated DataFrame to the same sheet in the new Excel file
-    with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
-        writer.book = xls.book  # Load the original workbook
-        writer.sheets = {ws.title: ws for ws in xls.book.worksheets}  # Preserve existing sheets
-        df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-# Provide a download link for the updated file in Colab
-output_file_path
+# Save the updated DataFrame to a new CSV file
+df.to_csv('output.csv', index=False)  # Replace 'output.csv' with your desired output file name
