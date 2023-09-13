@@ -6,13 +6,14 @@ api_key = 'YOUR_VIRUSTOTAL_API_KEY'
 
 # Function to get VirusTotal score and link for URLs
 def get_vt_score_and_link(url):
-    url = f'https://www.virustotal.com/vtapi/v2/url/report'
-    params = {'apikey': api_key, 'resource': url}
-    response = requests.get(url, params=params)
+    endpoint = 'https://www.virustotal.com/api/v3/urls/' + url
+    headers = {'x-apikey': api_key}
+    response = requests.get(endpoint, headers=headers)
     json_response = response.json()
     
-    if json_response['response_code'] == 1:
-        return json_response['positives'], json_response['total'], json_response['permalink']
+    if 'data' in json_response:
+        data = json_response['data']
+        return data['attributes']['last_analysis_stats']['malicious'], data['attributes']['last_analysis_stats']['harmless'], data['links']['self']
     else:
         return None, None, None
 
@@ -33,9 +34,9 @@ for sheet_name in xls.sheet_names:
         indicator = row['indicator value']
         
         if indicator:
-            vt_positives, vt_total, vt_permalink = get_vt_score_and_link(indicator)
-            if vt_positives is not None:
-                df.at[index, 'VT Score'] = vt_positives
+            vt_malicious, vt_harmless, vt_permalink = get_vt_score_and_link(indicator)
+            if vt_malicious is not None:
+                df.at[index, 'VT Score'] = f'Malicious: {vt_malicious}, Harmless: {vt_harmless}'
                 df.at[index, 'VT Link'] = vt_permalink
     
     # Save the updated DataFrame back to the Excel file
