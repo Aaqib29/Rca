@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+import os
 
 # Define your VirusTotal API key here
 api_key = 'YOUR_VIRUSTOTAL_API_KEY'
@@ -17,12 +18,16 @@ def get_vt_score_and_link(url):
     else:
         return None, None, None
 
+# Define the path to your XLSX file within Google Colab
+file_name = 'your_xlsx_file.xlsx'  # Replace with your XLSX file name
+file_path = os.path.join('/content', file_name)
+
 # Load your XLSX file with multiple sheets
-file_path = 'your_xlsx_file.xlsx'
 xls = pd.ExcelFile(file_path)
 
-# Create a new Excel file for the updated data
-output_file_path = 'updated_' + file_path
+# Create a new Excel file for the updated data within Google Colab
+output_file_name = 'updated_' + file_name
+output_file_path = os.path.join('/content', output_file_name)
 
 # Iterate through each sheet
 for sheet_name in xls.sheet_names:
@@ -42,8 +47,9 @@ for sheet_name in xls.sheet_names:
                 df.at[index, 'VT Score'] = f'Malicious: {vt_malicious}, Harmless: {vt_harmless}'
                 df.at[index, 'VT Link'] = vt_permalink
     
-    # Save the updated DataFrame to the new Excel file
+    # Save the updated DataFrame to the new Excel file within Google Colab
     with pd.ExcelWriter(output_file_path, mode='a', engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-print(f"Updated data saved to {output_file_path}")
+# Provide a download link for the updated file in Colab
+output_file_path
