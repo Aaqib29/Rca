@@ -4,18 +4,10 @@ import requests
 # Define your VirusTotal API key here
 api_key = 'YOUR_VIRUSTOTAL_API_KEY'
 
-# Function to get VirusTotal score and link based on indicator type
-def get_vt_score_and_link(indicator, indicator_type):
-    endpoint = {
-        'url': 'https://www.virustotal.com/vtapi/v2/url/report',
-        'ip': 'https://www.virustotal.com/vtapi/v2/ip-address/report',
-        'file_hash': 'https://www.virustotal.com/vtapi/v2/file/report'
-    }
-    url = endpoint.get(indicator_type, None)
-    if not url:
-        return None, None, None
-    
-    params = {'apikey': api_key, 'resource': indicator}
+# Function to get VirusTotal score and link for URLs
+def get_vt_score_and_link(url):
+    url = f'https://www.virustotal.com/vtapi/v2/url/report'
+    params = {'apikey': api_key, 'resource': url}
     response = requests.get(url, params=params)
     json_response = response.json()
     
@@ -39,10 +31,9 @@ for sheet_name in xls.sheet_names:
     # Iterate through rows in the DataFrame
     for index, row in df.iterrows():
         indicator = row['indicator value']
-        indicator_type = row['indicator type']  # Add a column indicating the type of indicator
         
         if indicator:
-            vt_positives, vt_total, vt_permalink = get_vt_score_and_link(indicator, indicator_type)
+            vt_positives, vt_total, vt_permalink = get_vt_score_and_link(indicator)
             if vt_positives is not None:
                 df.at[index, 'VT Score'] = vt_positives
                 df.at[index, 'VT Link'] = vt_permalink
