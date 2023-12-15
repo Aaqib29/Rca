@@ -1,13 +1,1 @@
-Following our previous notification about suspicious activity on your servers, I have an urgent update with a strong recommendation.
-
-The findings:
-
-Logs show commands associated with malware and hacking tools.
-Tools suggest attempts to exploit server vulnerabilities.
-A critical file access raises concerns about potential data compromise.
-Our recommendation:
-
-we strongly recommend decommissioning the affected servers and deploying new ones. This minimizes risk of residual vulnerabilities and allows for faster service restoration.
-
-Decommission the affected servers.
-Deploy new servers with secure configurations.
+models, accelerate innovation, and maximize growth by harnessing digital technologies. As a digital transformation partner to more than 700 clients, LTIMindtree brings extensive domain and technology expertise to help drive superior competitive differentiation, customer experiences, and business outcomes in a converging world. Powered by more than 85,000 talented and entrepreneurial professionals across 33 countries, LTIMindtree - a Larsen & Toubro Group company - combines the industry- acclaimed strengths of erstwhile Larsen & Toubro Infotech and Mindtree in solving the most complex business challenges and delivering transformation at scale. For more information, please visit www.Itimindtree.com.
